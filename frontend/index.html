@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ledger — Expense Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="brand-mark">L</span>
+      <span class="brand-name">Ledger</span>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-item active" data-view="dashboard">
+        <i data-lucide="layout-dashboard" class="nav-icon"></i><span>Dashboard</span>
+      </button>
+      <button class="nav-item" data-view="expenses">
+        <i data-lucide="receipt" class="nav-icon"></i><span>Expenses</span>
+      </button>
+      <button class="nav-item" data-view="add">
+        <i data-lucide="circle-plus" class="nav-icon"></i><span>Add Expense</span>
+      </button>
+      <button class="nav-item" data-view="categories">
+        <i data-lucide="tags" class="nav-icon"></i><span>Categories &amp; Budgets</span>
+      </button>
+      <button class="nav-item" data-view="insights">
+        <i data-lucide="sparkles" class="nav-icon"></i><span>AI Insights</span>
+      </button>
+    </nav>
+
+    <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">
+      <i data-lucide="moon" id="themeIcon"></i><span id="themeLabel">Dark mode</span>
+    </button>
+  </aside>
+
+  <!-- ============ MOBILE BOTTOM NAV ============ -->
+  <nav class="mobile-nav" id="mobileNav">
+    <button class="mobile-nav-item active" data-view="dashboard"><i data-lucide="layout-dashboard"></i><small>Home</small></button>
+    <button class="mobile-nav-item" data-view="expenses"><i data-lucide="receipt"></i><small>Expenses</small></button>
+    <button class="mobile-nav-item add-btn" data-view="add"><i data-lucide="plus"></i><small>Add</small></button>
+    <button class="mobile-nav-item" data-view="categories"><i data-lucide="tags"></i><small>Budgets</small></button>
+    <button class="mobile-nav-item" data-view="insights"><i data-lucide="sparkles"></i><small>Insights</small></button>
+  </nav>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="main">
+
+    <!-- ---------- DASHBOARD ---------- -->
+    <section class="view active" id="view-dashboard">
+      <header class="view-header">
+        <div>
+          <h1>Dashboard</h1>
+          <p class="subtitle" id="todayDate"></p>
+        </div>
+        <button class="btn btn-primary" id="quickAddBtn"><i data-lucide="plus"></i>Quick add</button>
+      </header>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <span class="stat-label">Total spent</span>
+          <span class="stat-value" id="statTotal">₹0</span>
+          <span class="stat-sub">All time</span>
+        </div>
+        <div class="stat-card accent">
+          <span class="stat-label">This month</span>
+          <span class="stat-value" id="statThisMonth">₹0</span>
+          <span class="stat-sub" id="statChange">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Last month</span>
+          <span class="stat-value" id="statLastMonth">₹0</span>
+          <span class="stat-sub">Previous period</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Top category</span>
+          <span class="stat-value" id="statTopCategory">—</span>
+          <span class="stat-sub" id="statTopCategoryAmount">This month</span>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="card chart-card">
+          <h3>Spending by category <small>this month</small></h3>
+          <div class="chart-wrap"><canvas id="categoryChart"></canvas></div>
+        </div>
+        <div class="card chart-card">
+          <h3>Last 30 days</h3>
+          <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header-row">
+            <h3>Recent expenses</h3>
+            <button class="link-btn" data-view="expenses">View all <i data-lucide="chevron-right"></i></button>
+          </div>
+          <div id="recentExpensesList" class="expense-list"></div>
+        </div>
+        <div class="card">
+          <h3>Budget progress</h3>
+          <div id="budgetProgressList" class="budget-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- EXPENSES ---------- -->
+    <section class="view" id="view-expenses">
+      <header class="view-header">
+        <div><h1>All expenses</h1><p class="subtitle" id="expenseCountSub">0 expenses</p></div>
+        <button class="btn btn-secondary" id="exportCsvBtn"><i data-lucide="download"></i>Export CSV</button>
+      </header>
+
+      <div class="card filter-bar">
+        <input type="text" id="searchInput" placeholder="Search description or notes...">
+        <select id="filterCategory"><option value="">All categories</option></select>
+        <input type="date" id="filterStart" title="From date">
+        <input type="date" id="filterEnd" title="To date">
+        <select id="sortSelect">
+          <option value="date_desc">Newest first</option>
+          <option value="date_asc">Oldest first</option>
+          <option value="amount_desc">Amount: high to low</option>
+          <option value="amount_asc">Amount: low to high</option>
+        </select>
+        <button class="btn btn-ghost" id="clearFiltersBtn">Clear</button>
+      </div>
+
+      <div class="card">
+        <div id="fullExpenseList" class="expense-list"></div>
+        <div id="emptyState" class="empty-state hidden">
+          <i data-lucide="inbox"></i>
+          <p>No expenses found. Try adjusting your filters or add a new expense.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- ADD EXPENSE ---------- -->
+    <section class="view" id="view-add">
+      <header class="view-header">
+        <div><h1 id="addFormTitle">Add expense</h1><p class="subtitle">Log a new transaction</p></div>
+      </header>
+
+      <div class="card ai-quick-add">
+        <h3><i data-lucide="sparkles"></i>Quick add with AI</h3>
+        <p class="hint">Describe it naturally — e.g. "Spent 450 on groceries yesterday with card"</p>
+        <div class="ai-input-row">
+          <input type="text" id="aiTextInput" placeholder="Type a natural language expense...">
+          <button class="btn btn-primary" id="aiParseBtn">Parse</button>
+        </div>
+        <p id="aiStatusMsg" class="ai-status"></p>
+      </div>
+
+      <div class="card">
+        <form id="expenseForm">
+          <input type="hidden" id="expenseId">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="amountInput">Amount *</label>
+              <input type="number" id="amountInput" step="0.01" min="0.01" placeholder="0.00" required>
+            </div>
+            <div class="form-group">
+              <label for="categorySelect">Category *</label>
+              <select id="categorySelect" required></select>
+            </div>
+            <div class="form-group">
+              <label for="dateInput">Date *</label>
+              <input type="date" id="dateInput" required>
+            </div>
+            <div class="form-group">
+              <label for="paymentSelect">Payment method</label>
+              <select id="paymentSelect">
+                <option>Cash</option><option>Card</option><option>UPI</option>
+                <option>Bank Transfer</option><option>Other</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label for="descriptionInput">Description</label>
+              <input type="text" id="descriptionInput" placeholder="e.g. Lunch with friends" maxlength="200">
+            </div>
+            <div class="form-group full">
+              <label for="notesInput">Notes</label>
+              <textarea id="notesInput" rows="2" placeholder="Optional notes..." maxlength="500"></textarea>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-ghost" id="cancelEditBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="submitExpenseBtn">Save expense</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ---------- CATEGORIES & BUDGETS ---------- -->
+    <section class="view" id="view-categories">
+      <header class="view-header">
+        <div><h1>Categories &amp; budgets</h1><p class="subtitle">Organize spending and set monthly limits</p></div>
+        <button class="btn btn-primary" id="addCategoryBtn"><i data-lucide="plus"></i>New category</button>
+      </header>
+
+      <div id="categoryFormCard" class="card hidden">
+        <h3 id="categoryFormTitle">New category</h3>
+        <form id="categoryForm">
+          <input type="hidden" id="categoryId">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="categoryNameInput">Name *</label>
+              <input type="text" id="categoryNameInput" required maxlength="40">
+            </div>
+            <div class="form-group">
+              <label for="categoryIconInput">Icon (emoji)</label>
+              <input type="text" id="categoryIconInput" maxlength="4" placeholder="🏷️">
+            </div>
+            <div class="form-group">
+              <label for="categoryColorInput">Color</label>
+              <input type="color" id="categoryColorInput" value="#9C7A2E">
+            </div>
+            <div class="form-group">
+              <label for="categoryBudgetInput">Monthly budget</label>
+              <input type="number" id="categoryBudgetInput" step="0.01" min="0" placeholder="0.00">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-ghost" id="cancelCategoryBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save category</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="category-grid" id="categoryGrid"></div>
+    </section>
+
+    <!-- ---------- AI INSIGHTS ---------- -->
+    <section class="view" id="view-insights">
+      <header class="view-header">
+        <div><h1>AI insights</h1><p class="subtitle">Personalized analysis of your spending, powered by Gemini</p></div>
+        <button class="btn btn-primary" id="generateInsightsBtn"><i data-lucide="sparkles"></i>Generate insights</button>
+      </header>
+
+      <div class="card">
+        <div id="insightsContent">
+          <div class="empty-state">
+            <i data-lucide="bot"></i>
+            <p>Click "Generate insights" to get a personalized breakdown of your spending habits.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="toast" class="toast"></div>
+<div id="confirmModal" class="modal hidden">
+  <div class="modal-box">
+    <p id="confirmMessage">Are you sure?</p>
+    <div class="form-actions">
+      <button class="btn btn-ghost" id="confirmCancelBtn">Cancel</button>
+      <button class="btn btn-danger" id="confirmOkBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
