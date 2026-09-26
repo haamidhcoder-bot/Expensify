@@ -6,8 +6,6 @@ Expensify is designed to help users record, organize, and review their expenses 
 
 ## Screenshots
 
-> Replace the placeholders below with screenshots of the application after adding them to the repository.
-
 ### Home / Dashboard
 
 <!-- SCREENSHOT: Add your dashboard screenshot here -->
