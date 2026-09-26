@@ -1,99 +1,207 @@
-# Expensify — Smart Expense Tracker
+# Expensify
 
-A full-stack personal expense tracker with a modern, responsive UI, a Python
-(Flask) REST API, SQLite storage, and optional AI features powered by the
-Gemini API (natural-language expense entry + personalized spending insights).
+A web-based expense management application built with **Flask, HTML, CSS, JavaScript, and SQLite**, with an AI-powered service integration.
+
+Expensify is designed to help users record, organize, and review their expenses through a simple web interface.
+
+## Screenshots
+
+> Replace the placeholders below with screenshots of the application after adding them to the repository.
+
+### Home / Dashboard
+
+<!-- SCREENSHOT: Add your dashboard screenshot here -->
+
+![Dashboard Screenshot](screenshots/dashboard.png)
+
+### Add Expense
+
+<!-- SCREENSHOT: Add your add-expense screenshot here -->
+
+![Add Expense Screenshot](screenshots/add-expense.png)
+
+### Expense List
+
+<!-- SCREENSHOT: Add your expense-list screenshot here -->
+
+![Expense List Screenshot](screenshots/expense-list.png)
+
+### AI Assistant
+
+<!-- SCREENSHOT: Add your AI assistant screenshot here -->
+
+![AI Assistant Screenshot](screenshots/ai-assistant.png)
 
 ## Features
 
-- **Dashboard** — total/monthly spend, month-over-month change, top category,
-  a category breakdown chart, a 30-day spending trend chart, recent
-  transactions, and live budget-progress bars.
-- **Expenses** — add, edit, delete; search by description/notes; filter by
-  category and date range; sort by date or amount; CSV export.
-- **Categories & Budgets** — create/edit/delete custom categories (icon +
-  color), set a monthly budget per category, see spend vs. budget.
-- **AI Quick Add** — type a sentence like *"Spent 450 on groceries yesterday
-  with card"* and Gemini fills in the amount, category, date, description,
-  and payment method for you to review before saving.
-- **AI Insights** — Gemini analyzes your recent spending and returns a short
-  list of concrete, personalized tips.
-- **Modern UI** — light/dark mode, fully responsive (desktop sidebar / mobile
-  bottom nav), toast notifications, confirm dialogs.
+- Add and manage personal expenses
+- Organize expenses by category
+- View recorded expenses through a web interface
+- Expense data stored using SQLite
+- Responsive frontend interface
+- Flask backend for application logic and API routes
+- JavaScript-based frontend interactions
+- Gemini/AI service integration
+- Custom application logo and favicon
 
-The app works fully **without** a Gemini API key — only the two AI features
-are disabled until you add one; everything else (tracking, budgets, charts,
-export) works immediately.
+## Tech Stack
 
-## Project structure
+### Frontend
+- HTML5
+- CSS3
+- JavaScript
 
-```
-expense-tracker/
+### Backend
+- Python
+- Flask
+- SQLite
+
+### AI
+- Google Gemini API
+
+## Project Structure
+
+```text
+Expensify/
 ├── backend/
-│   ├── app.py              # Flask app & all API routes
-│   ├── db.py                # SQLite schema + connection helpers
-│   ├── gemini_service.py    # Gemini API wrapper (parsing + insights)
-│   ├── requirements.txt
-│   └── .env.example         # copy to .env and add your Gemini key
-└── frontend/
-    ├── index.html
-    ├── style.css
-    └── script.js
+│   ├── app.py
+│   ├── db.py
+│   ├── gemini_service.py
+│   ├── .env.example
+│   ├── .gitignore
+│   └── expenses.db
+│
+├── frontend/
+│   ├── index.html
+│   ├── style.css
+│   ├── script.js
+│   ├── logo.png
+│   └── favicon.png
+│
+├── requirements.txt
+└── README.md
 ```
 
-## Setup
+## Installation
 
-1. **Install dependencies** (Python 3.9+):
+### 1. Clone the repository
 
-   ```bash
-   cd expense-tracker/backend
-   pip install -r requirements.txt
-   ```
+```bash
+git clone <your-repository-url>
+cd Expensify
+```
 
-2. **(Optional) Enable AI features** — get a free key from
-   [Google AI Studio](https://aistudio.google.com/apikey), then:
+### 2. Create a virtual environment
 
-   ```bash
-   cp .env.example .env
-   # edit .env and paste your key into GEMINI_API_KEY
-   ```
+Windows:
 
-3. **Run the server:**
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+```
 
-   ```bash
-   python app.py
-   ```
+macOS/Linux:
 
-4. Open **http://localhost:5000** in your browser. That's it — the Flask
-   server also serves the frontend, so there's nothing separate to start.
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
 
-## Using it on your phone
+### 3. Install dependencies
 
-The UI is fully responsive and works great on mobile. There are two ways to get to it from a phone:
+```bash
+pip install -r requirements.txt
+```
 
-**Option A — same Wi-Fi network (quickest)**
-1. Start the server on your computer as usual (`python app.py`).
-2. Find your computer's local IP address:
-   - Windows: `ipconfig` → look for "IPv4 Address" (e.g. `192.168.1.42`)
-   - Mac/Linux: `ifconfig` or `ip addr` → look for something like `192.168.1.42`
-3. Make sure your phone is on the **same Wi-Fi network**.
-4. On your phone's browser, go to `http://<that-ip>:5000` (e.g. `http://192.168.1.42:5000`).
-5. Optional: add it to your home screen (Share → "Add to Home Screen" on iOS, or the browser menu → "Add to Home Screen" on Android) so it opens like an app.
+## Environment Variables
 
-This only works while your computer is on and running the server, and both devices are on the same network.
+Create a `.env` file inside the `backend` directory using `.env.example` as a reference.
 
-**Option B — access from anywhere (deploy it)**
-If you want it reachable without your computer running, deploy the backend to a free host such as Render, PythonAnywhere, or Railway (any of them can run a Flask app), then open the deployed URL from your phone. This takes a bit more setup — ask me and I can walk you through deploying to a specific one.
+Example:
 
-**Option C — run it entirely on your phone (Android only)**
-Install [Termux](https://f-droid.org/packages/com.termux/), then inside it: `pkg install python`, `pip install -r requirements.txt`, and `python app.py`. Open `http://localhost:5000` in the phone's browser. No computer needed at all, but iPhone doesn't have an equivalent tool.
+```env
+GEMINI_API_KEY=your_api_key_here
+```
 
-## Notes
+Do not commit your real API key to GitHub.
 
-- Data is stored locally in `backend/expenses.db` (SQLite), created
-  automatically on first run with ten default categories.
-- The Gemini model used is `gemini-2.5-flash` by default; override it by
-  setting `GEMINI_MODEL` in `.env` (e.g. to a newer model as they become
-  available).
-- Currency is formatted as INR (₹) by default — change the locale/currency
-  in `fmtCurrency()` in `script.js` if you'd prefer USD, EUR, etc.
+## Running the Application
+
+From the project root:
+
+```bash
+python backend/app.py
+```
+
+Then open the local address shown by Flask in your browser.
+
+Typically:
+
+```text
+http://127.0.0.1:5000
+```
+
+## Database
+
+Expensify uses SQLite for local data storage.
+
+The database file is:
+
+```text
+backend/expenses.db
+```
+
+For a production deployment, database configuration and secret management should be reviewed before exposing the application publicly.
+
+## AI Integration
+
+The project contains a dedicated AI service:
+
+```text
+backend/gemini_service.py
+```
+
+This keeps Gemini-related functionality separate from the main Flask application and makes the AI component easier to maintain.
+
+## Configuration
+
+The example environment file is:
+
+```text
+backend/.env.example
+```
+
+Use it as the template for your local environment variables.
+
+## Future Improvements
+
+Possible improvements include:
+
+- User authentication and account management
+- Monthly and yearly expense summaries
+- Interactive charts and dashboards
+- Export expenses to CSV/PDF
+- Budget alerts
+- Recurring expenses
+- Improved AI-based financial insights
+- Cloud database support
+- Production deployment configuration
+- Automated tests
+
+## Security Notes
+
+- Keep `.env` files out of version control.
+- Never publish API keys in source code.
+- Use strong secret keys for production deployments.
+- Validate and sanitize user input.
+- Use HTTPS when deploying the application publicly.
+
+## Author
+
+**Haamidh Mohideen**
+
+Built as a software development project to explore Flask, frontend development, database integration, and AI-powered application features.
+
+## License
+
+Add your preferred license here, such as MIT, if you plan to distribute the project under an open-source license.
